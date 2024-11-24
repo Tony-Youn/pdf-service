@@ -1,6 +1,6 @@
 const upload = require("multer")();
-const pdfService = require("../src/services/pdfService");
-const logger = require("../src/utils/logger");
+const pdfService = require("../services/pdfService");
+const logger = require("../utils/logger");
 
 module.exports = async (req, res) => {
   if (req.method !== "POST") {
