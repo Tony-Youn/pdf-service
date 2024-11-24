@@ -1,5 +1,5 @@
 const express = require("express");
-const processPdf = require("./api/process-pdf");
+const processPdf = require("../api/process-pdf");
 
 const app = express();
 app.use(express.json());
