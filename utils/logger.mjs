@@ -1,4 +1,6 @@
-const winston = require("winston");
+import winston from "winston";
+import path from "path";
+import fs from "fs";
 
 const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || "info",
@@ -18,11 +20,9 @@ if (process.env.NODE_ENV === "production") {
   );
 } else {
   // For development, use file-based logging and console logging
-  const path = require("path");
-  const fs = require("fs");
 
   // Ensure logs directory exists
-  const logDir = path.join(__dirname, "../logs");
+  const logDir = path.join(process.cwd(), "logs"); // Use `process.cwd()` for consistent root directory resolution
   if (!fs.existsSync(logDir)) {
     fs.mkdirSync(logDir);
   }
@@ -47,4 +47,4 @@ if (process.env.NODE_ENV === "production") {
   );
 }
 
-module.exports = logger;
+export default logger;

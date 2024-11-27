@@ -19,4 +19,4 @@ const validatePdfRequest = (req, res, next) => {
   next();
 };
 
-module.exports = { validatePdfRequest };
+export { validatePdfRequest };

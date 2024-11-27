@@ -1,5 +1,5 @@
-const express = require("express");
-const processPdf = require("./api/process-pdf");
+import express from "express";
+import processPdf from "./api/process-pdf.mjs";
 
 const app = express();
 app.use(express.json());
