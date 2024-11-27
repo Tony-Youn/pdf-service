@@ -8,12 +8,15 @@ const upload = multer();
 export default async (req, res) => {
   try {
     if (req.method !== "POST") {
-      return res.status(405).json({ error: "Method not allowed" });
+      res.statusCode = 405;
+      res.setHeader("Content-Type", "application/json");
+      res.end(JSON.stringify({ error: "Method not allowed" }));
+      return;
     }
 
-    // Ensure `multer` processes the file
+    // Handle file upload
     await new Promise((resolve, reject) =>
-      upload.single("pdf")(req, res, (err) => {
+      upload.single("pdf")(req, {}, (err) => {
         if (err) return reject(err);
         resolve();
       })
@@ -26,37 +29,40 @@ export default async (req, res) => {
 
     // Ensure the uploaded file exists
     if (!req.file || !req.file.buffer) {
-      return res.status(400).json({ error: "No PDF file uploaded" });
+      res.statusCode = 400;
+      res.setHeader("Content-Type", "application/json");
+      res.end(JSON.stringify({ error: "No PDF file uploaded" }));
+      return;
     }
 
-    // Process the uploaded PDF using PdfService
+    // Process the uploaded PDF
     const processedPdf = await pdfService.extractAndReplaceText(
       req.file.buffer,
       {
-        startPage: 4, // Specify the starting page (1-based index)
-        endPage: 6, // Specify the ending page (1-based index)
-        replacements, // Pass the replacements object
+        startPage: 4,
+        endPage: 6,
+        replacements,
       }
     );
 
-    // Set the response headers to return the modified PDF
-    res.set({
-      "Content-Type": "application/pdf",
-      "Content-Disposition": "attachment; filename=processed.pdf",
-    });
+    // Set headers and send the response
+    res.statusCode = 200;
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", "attachment; filename=processed.pdf");
+    res.end(Buffer.from(processedPdf));
 
-    // Send the processed PDF as the response
-    res.send(Buffer.from(processedPdf));
-
-    // Log the success
+    // Log success
     logger.info("PDF processed successfully", {
       originalName: decode(escape(req.file.originalname)),
       size: req.file.size,
       replacements: Object.keys(replacements),
     });
   } catch (error) {
-    // Log and handle errors
+    // Log error
     logger.error("Error processing PDF:", error);
-    res.status(500).json({ error: "Error processing PDF" });
+
+    res.statusCode = 500;
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({ error: "Error processing PDF" }));
   }
 };
