@@ -1,5 +1,5 @@
 import * as pdfjsLib from "pdfjs-dist/build/pdf.mjs";
-import { PDFDocument } from "pdf-lib";
+import { PDFDocument, rgb } from "pdf-lib";
 import logger from "../utils/logger.mjs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -43,14 +43,14 @@ class PdfService {
             y: pos.y,
             width: pos.width,
             height: pos.height,
-            color: { r: 1, g: 1, b: 1 },
+            color: rgb(1, 1, 1), // White to "erase" old text
           });
 
           copiedPage.drawText(pos.newText, {
             x: pos.x,
             y: pos.y,
             size: pos.fontSize || 12,
-            color: { r: 0, g: 0, b: 0 },
+            color: rgb(0, 0, 0), // Black text
           });
         }
 
@@ -75,8 +75,8 @@ class PdfService {
             x: item.transform[4],
             y: item.transform[5],
             width: item.width,
-            height: item.height || 10,
-            fontSize: item.height || 12,
+            height: item.height || 10, // Provide a fallback height
+            fontSize: item.height || 12, // Provide a fallback font size
             oldText,
             newText,
           });
