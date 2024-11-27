@@ -1,6 +1,10 @@
-import { getDocument } from "pdfjs-dist/build/pdf.mjs";
+import * as pdfjsLib from "pdfjs-dist/build/pdf.mjs"; // Import full library for setting up the worker
+import pdfjsWorker from "pdfjs-dist/build/pdf.worker.mjs"; // Import the worker file
 import { PDFDocument } from "pdf-lib";
 import logger from "../utils/logger.mjs";
+
+// Explicitly set the worker source for pdfjs-dist
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 class PdfService {
   /**
@@ -15,8 +19,9 @@ class PdfService {
   async extractAndReplaceText(pdfBuffer, { startPage, endPage, replacements }) {
     try {
       // Load the original PDF with pdfjs-dist
-      const pdfDoc = await getDocument({ data: new Uint8Array(pdfBuffer) })
-        .promise;
+      const pdfDoc = await pdfjsLib.getDocument({
+        data: new Uint8Array(pdfBuffer),
+      }).promise;
       const totalPages = pdfDoc.numPages;
 
       // Validate the page range

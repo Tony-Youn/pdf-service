@@ -51,7 +51,7 @@ export default async (req, res) => {
 
       // Log the success
       logger.info("PDF processed successfully", {
-        originalName: decode(escape(req.file.originalname)), // Decode the file name
+        originalName: decode(escape(req.file.originalname)),
         size: req.file.size,
         replacements: Object.keys(replacements),
       });
