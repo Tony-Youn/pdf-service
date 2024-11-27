@@ -1,6 +1,8 @@
 import * as pdfjsLib from "pdfjs-dist/build/pdf.mjs";
 import { PDFDocument, rgb } from "pdf-lib";
+import fontkit from "@pdf-lib/fontkit"; // Import fontkit
 import logger from "../utils/logger.mjs";
+import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -29,6 +31,14 @@ class PdfService {
 
       const newPdf = await PDFDocument.create();
 
+      // Register fontkit
+      newPdf.registerFontkit(fontkit);
+
+      // Embed custom font
+      const fontPath = path.join(__dirname, "../public/NotoSansKR-Regular.ttf");
+      const fontBytes = fs.readFileSync(fontPath);
+      const customFont = await newPdf.embedFont(fontBytes);
+
       for (let pageNum = startPage; pageNum <= endPage; pageNum++) {
         const page = await pdfDoc.getPage(pageNum);
         const textContent = await page.getTextContent();
@@ -50,6 +60,7 @@ class PdfService {
             x: pos.x,
             y: pos.y,
             size: pos.fontSize || 12,
+            font: customFont, // Use the embedded font
             color: rgb(0, 0, 0), // Black text
           });
         }
